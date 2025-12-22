@@ -1,0 +1,86 @@
+{
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "editor.formatOnSave": true,
+  "editor.inlineSuggest.enabled": true,
+  "python.languageServer": "Pylance",
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.cwd": "${workspaceFolder}",
+  "python.testing.autoTestDiscoverOnSaveEnabled": false,
+  "python.testing.pytestArgs": [
+    "-n",
+    "auto",
+  ],
+  "autoDocstring.docstringFormat": "google",
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+  },
+  "github.copilot.enable": {
+    "*": true,
+    "bash": true,
+    "yaml": true,
+    "toml": true,
+    "python": true,
+    "markdown": true,
+    "plaintext": false,
+  },
+  "chat.agent.enabled": true,
+  "cSpell.enabled": true,
+  "cSpell.allowCompoundWords": true,
+  "cSpell.language": "en",
+  "cSpell.ignorePaths": [
+    "**/*.json"
+  ],
+  "cSpell.words": [
+    "iloc",
+    "logit",
+    "pytest",
+    "pylint",
+    "Nilse",
+    "isort",
+    "pycodestyle",
+    "pyupgrade",
+    "kwargs",
+    "virtualenv",
+    "venv",
+    "pycache",
+    "pyproject",
+    "xdist",
+    "pydocstyle",
+    "pydantic",
+    "asyncio",
+    "pypandoc",
+    "isinstance",
+    "mcpserver",
+    "pyright",
+    "fastmcp",
+    "wolframscript",
+    "mathematica",
+  ],
+  "cSpell.languageSettings": [
+    {
+      "languageId": "python",
+      "enabled": true,
+      "includeRegExpList": [
+        "Python Docstrings"
+      ],
+      "patterns": [
+        {
+          "name": "Python Docstrings",
+          "pattern": "^\\s*(\"\"\")[^\"\"\"]*(\"\"\")"
+        }
+      ]
+    }
+  ],
+  "shellcheck.ignorePatterns": {
+    "**/.env.example": true,
+    "**/.env": true,
+  },
+  "logViewer.watch": [
+    {
+      "title": "mathematica_mcp",
+      "pattern": "mathematica_mcp.log"
+    },
+  ],
+}
