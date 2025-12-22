@@ -1,0 +1,151 @@
+[project]
+name = "mathematica_mcp"
+version = "0.1.0"
+description = "MCP server for WolframScript"
+readme = "README.md"
+authors = [{ name = "Lars Nilse", email = "l.nilse@dunelm.org.uk" }]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "loguru>=0.7.3",
+  "pytest>=8.3.4",
+  "ruff>=0.9.5",
+  "pylint>=3.3.4",
+  "pytest-xdist>=3.6.1",
+  "tavily-python>=0.5.1",
+  "pytest-cov>=6.0.0",
+  "pydantic>=2.10.6",
+  "pytest-asyncio>=0.25.3",
+  "pypandoc>=1.15",
+  "pydantic-ai[cli,examples,mcp]>=0.0.40",
+  "logfire[httpx]>=3.10.0",
+  "python-dotenv>=1.1.0",
+  "pydantic-evals[logfire]>=0.0.51",
+  "pydantic-ai-slim[mcp]>=0.0.40",
+  "duckduckgo-mcp-server>=0.1.1",
+  "wordcloud>=1.9.4",
+  "tenacity>=9.1.2",
+  "brotli>=1.1.0",
+  "markdownify>=1.1.0",
+  "pydantic-settings>=2.8.1",
+  "pyright>=1.1.404",
+  "choix>=0.4.1",
+  "numpy>=2.3.3",
+  "pytest-recording>=0.13.4",
+  "pytest-mock>=3.15.1",
+  "ddgs>=9.6.1",
+  "fastmcp>=2.13.0.1",
+]
+
+[project.scripts]
+uml = "mathematica_mcp.cli:uml"
+chat = "mathematica_mcp.examples:basic_chat"
+mcpserver = "mathematica_mcp.examples:mcp_server"
+mcpserver_stdio = "mathematica_mcp.examples:mcp_server_stdio"
+date_server = "mathematica_mcp.mcp.date_server:date_server"
+wolframscript_server = "mathematica_mcp.mcp.wolframscript_server:wolframscript_server"
+research = "mathematica_mcp.graph:main"
+import = "mathematica_mcp.evals.import_bigbench:main"
+generate = "mathematica_mcp.evals.generate:main"
+eval = "mathematica_mcp.evals.evals:main"
+
+[tool.ruff]
+line-length = 150
+lint.select = [
+  "E",   # pycodestyle
+  "F",   # pyflakes
+  "I",   # isort
+  "TID", # tidy imports
+  "UP",  # pyupgrade
+  "C4",  # comprehensions
+  "SIM", # simplifications
+  "PD",  # pandas-specific rules
+  "NPY", # numpy-specific rules
+  "PL",  # pylint
+  "B",   # bugbear
+  "ANN", # type annotations
+  "TC",  # type checking
+]
+lint.ignore = [
+  "SIM108",  # Ignore ternary operators rule i.e. allow if-else blocks
+  "PLR2004", # Allow magic values
+  "PLR0915", # Allow long functions
+  "PLR0912", # Allow many branches
+  "PLR0913", # Allow many arguments
+  "TC006",   # Allow type casting without strings
+]
+lint.pydocstyle.convention = "google"
+
+[tool.pyright]
+# Core Settings
+typeCheckingMode = "basic"  # next step: "standard"
+pythonVersion = "3.12"
+venvPath = "."
+venv = ".venv"
+# Paths
+include = ["src", "tests"]
+exclude = [
+  ".git",
+  ".venv",
+  "dist",
+  "uml",
+  "**/__pycache__",
+]
+strict = []  # If you really really want strict checking for parts of the code
+# High-value Rules
+reportOptionalMemberAccess = "error"
+reportOptionalSubscript = "error"  
+reportOptionalCall = "error"
+reportGeneralTypeIssues = "error"
+reportReturnType = "error"
+# Grey Area
+reportAttributeAccessIssue = "warning"
+# Noisy Rules
+reportUnknownParameterType = false
+reportUnknownVariableType = false
+reportMissingParameterType = false
+reportMissingTypeStubs = false
+reportPrivateUsage = false
+
+[tool.pytest.ini_options]
+addopts = ["-m", "not paid"] # Skip tests that require a paid API key
+asyncio_default_fixture_loop_scope = "function" # Use "session" for a single event loop for all tests or "function" for a new event loop for every test (more isolation).
+markers = [
+  "paid: tests requiring paid APIs",
+  "ollama: tests requiring a local Ollama instance",
+  "searxng: tests requiring a local SearXNG instance",
+  "wolframscript: tests requiring a local WolframScript installation",
+  "example: examples which are not testing mathematica_mcp functionality",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["mathematica_mcp"]
+parallel = true
+disable_warnings = ["module-not-measured"]
+omit = [
+  "tests/*",
+  "src/mathematica_mcp/cli.py",
+  "src/mathematica_mcp/examples.py",
+  "src/mathematica_mcp/evals/generate.py",
+  "src/mathematica_mcp/evals/import_bigbench.py",
+  "src/mathematica_mcp/mcp/wolframscript_server.py",
+]
+
+[tool.coverage.report]
+show_missing = true  # Show line numbers of missing coverage in terminal
+skip_covered = false # Show all files, including those with full coverage
+skip_empty = true    # Skip files with no statements
+precision = 1        # Show coverage to 1 decimal place
+exclude_lines = [
+    "pragma: no cover",            # Don't count lines marked to be excluded
+    "raise NotImplementedError",   # Don't count abstract methods
+    "if __name__ == .__main__.:",  # Don't count main entry points
+    "if TYPE_CHECKING:",           # Don't count type checking blocks
+]
+
+[tool.coverage.html]
+directory = "coverage"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,1 +1,1 @@
-# mathematica-mcp
+# mathematica_mcp

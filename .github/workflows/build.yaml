@@ -1,0 +1,135 @@
+name: CI
+on:
+  push
+  # pull_request:
+  #   branches:
+  #     - main
+  # push:
+  #   branches:
+  #     - main
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  ci:
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+        uv-version: ["latest"]
+        # Only run CI on Linux. Windows and macOS cost 2x and 10x more respectively.
+        os: [ubuntu-latest]
+        # os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4.2.0
+      - name: Free Disk Space on GitHub Actions runner
+        # Runners come with many preinstalled tools that we don't need for our build.
+        # This action removes them to free up disk space for the following steps, such as the heavy devcontainer build.
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+      - name: Create .env file
+        # Define in GitHub repository: Settings -> Secrets and variables -> Actions -> New repository secret
+        run: |
+          echo TAVILY_API_KEY=${{ secrets.TAVILY_API_KEY }} >> .env
+          echo GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} >> .env
+          echo LOGFIRE_TOKEN=${{ secrets.LOGFIRE_TOKEN }} >> .env
+          echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
+          echo WEATHER_API_KEY=${{ secrets.WEATHER_API_KEY }} >> .env
+          echo GEO_API_KEY=${{ secrets.GEO_API_KEY }} >> .env
+          echo BRAVE_API_KEY=${{ secrets.BRAVE_API_KEY }} >> .env
+          echo SERPER_API_KEY=${{ secrets.SERPER_API_KEY }} >> .env
+      - name: Install uv package manager
+        uses: astral-sh/setup-uv@v5.2.2
+        with:
+          version: ${{ matrix.uv-version }}
+          enable-cache: true
+      - name: Check uv version
+        run: uv --version
+      - name: Install dependencies
+        run: uv sync
+      - name: Check installed dependencies
+        run: |
+          uv run python --version
+          uv tree
+      - name: Build the package
+        run: uv build
+      - name: Lint the package
+        run: uvx ruff check .
+      - name: Type check the package
+        run: uvx pyright .
+      - name: Run unit tests
+        # -v                verbose
+        # -m "not paid"     skip tests requiring paid API keys
+        # -p no:warnings    ignore warnings
+        # -n auto           run tests in parallel
+        run: uv run pytest -v -m "not paid" -p no:warnings -n auto --cov=mathematica_mcp --cov-report=xml
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mathematica_mcp-pytest-logs
+          path: mathematica_mcp.log
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Install Graphviz for UML diagrams
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz
+      - name: Generate UML diagrams
+        run: |
+          mkdir -p ./uml
+          uv run pyreverse -o png -A -k -d ./uml ./src/mathematica_mcp
+      - name: Upload UML class diagram
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mathematica_mcp-uml-classes
+          path: uml/classes.png
+      - name: Upload UML package diagram
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mathematica_mcp-uml-packages
+          path: uml/packages.png
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and run dev container task
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: ghcr.io/lars20070/mathematica_mcp-devcontainer
+          cacheFrom: ghcr.io/lars20070/mathematica_mcp-devcontainer
+          imageTag: latest,${{ github.sha }}
+          push: always
+          runCmd: |
+            bash -c '
+              set -o errexit -o pipefail -o nounset
+              uv --version
+              uvx --version
+              uv run python --version
+              uvx ruff check .
+              uvx pyright .
+              echo "Dev container built and run successfully"
+            '

@@ -1,0 +1,30 @@
+# macOS
+.DS_store
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.ropeproject/
+.env
+.env.backup
+*.log
+.coverage
+coverage*
+*.dot
+codeql-custom-queries-python/
+
+# PydanticAI
+examples/
+node_modules/
+
+# reports
+reports/*.md
+reports/*.pdf
+tests/reports/*.md
+tests/reports/*.pdf
+
+# Coding agents
+CLAUDE.local.md
+.cursor/mcp.json
