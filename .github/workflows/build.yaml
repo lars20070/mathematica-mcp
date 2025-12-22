@@ -49,7 +49,7 @@ jobs:
       - name: Check uv version
         run: uv --version
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --all-groups
       - name: Check installed dependencies
         run: |
           uv run python --version
