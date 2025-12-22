@@ -37,16 +37,7 @@ dependencies = [
 ]
 
 [project.scripts]
-uml = "mathematica_mcp.cli:uml"
-chat = "mathematica_mcp.examples:basic_chat"
-mcpserver = "mathematica_mcp.examples:mcp_server"
-mcpserver_stdio = "mathematica_mcp.examples:mcp_server_stdio"
-date_server = "mathematica_mcp.mcp.date_server:date_server"
-wolframscript_server = "mathematica_mcp.mcp.wolframscript_server:wolframscript_server"
-research = "mathematica_mcp.graph:main"
-import = "mathematica_mcp.evals.import_bigbench:main"
-generate = "mathematica_mcp.evals.generate:main"
-eval = "mathematica_mcp.evals.evals:main"
+mathematica_server = "mathematica_mcp.server:wolframscript_server"
 
 [tool.ruff]
 line-length = 150
@@ -110,11 +101,7 @@ reportPrivateUsage = false
 addopts = ["-m", "not paid"] # Skip tests that require a paid API key
 asyncio_default_fixture_loop_scope = "function" # Use "session" for a single event loop for all tests or "function" for a new event loop for every test (more isolation).
 markers = [
-  "paid: tests requiring paid APIs",
-  "ollama: tests requiring a local Ollama instance",
-  "searxng: tests requiring a local SearXNG instance",
   "wolframscript: tests requiring a local WolframScript installation",
-  "example: examples which are not testing mathematica_mcp functionality",
 ]
 
 [tool.coverage.run]
@@ -124,11 +111,7 @@ parallel = true
 disable_warnings = ["module-not-measured"]
 omit = [
   "tests/*",
-  "src/mathematica_mcp/cli.py",
-  "src/mathematica_mcp/examples.py",
-  "src/mathematica_mcp/evals/generate.py",
-  "src/mathematica_mcp/evals/import_bigbench.py",
-  "src/mathematica_mcp/mcp/wolframscript_server.py",
+  "src/mathematica_mcp/server.py",
 ]
 
 [tool.coverage.report]
@@ -149,3 +132,6 @@ directory = "coverage"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mathematica_mcp"]

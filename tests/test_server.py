@@ -3,12 +3,12 @@ import os
 from unittest.mock import AsyncMock
 
 import pytest
-from mathematica_mcp.mcp.wolframscript_server import _run_wolframscript
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from pytest_mock import MockerFixture
 
 from mathematica_mcp.logger import logger
+from mathematica_mcp.server import _run_wolframscript
 
 
 @pytest.mark.wolframscript
