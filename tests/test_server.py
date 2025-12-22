@@ -15,7 +15,7 @@ from mathematica_mcp.server import _run_wolframscript
 @pytest.mark.asyncio
 async def test_wolframscript_server() -> None:
     """
-    Test the wolframscript MCP server functionality defined in mathematica_mcp.mcp.wolframscript_server.wolframscript_server()
+    Test the wolframscript MCP server functionality defined in mathematica_mcp.server.wolframscript_server()
 
     The MCP server wraps the 'wolframscript' command to evaluate Wolfram Language code.
     The MCP server is started automatically.
@@ -52,7 +52,7 @@ async def test_wolframscript_server() -> None:
 @pytest.mark.asyncio
 async def test_version_wolframscript() -> None:
     """
-    Test the wolframscript MCP server functionality defined in mathematica_mcp.mcp.wolframscript_server.wolframscript_server()
+    Test the wolframscript MCP server functionality defined in mathematica_mcp.server.wolframscript_server()
 
     The MCP server wraps the 'wolframscript' command to return the version of WolframScript.
     The MCP server is started automatically.
@@ -89,7 +89,7 @@ async def test_version_wolframscript() -> None:
 @pytest.mark.asyncio
 async def test_version_wolframengine() -> None:
     """
-    Test the wolframscript MCP server functionality defined in mathematica_mcp.mcp.wolframscript_server.wolframscript_server()
+    Test the wolframscript MCP server functionality defined in mathematica_mcp.server.wolframscript_server()
 
     The MCP server wraps the 'wolframscript' command to return the version of Wolfram Engine.
     The MCP server is started automatically.
@@ -126,7 +126,7 @@ async def test_version_wolframengine() -> None:
 @pytest.mark.asyncio
 async def test_licensetype() -> None:
     """
-    Test the wolframscript MCP server functionality defined in mathematica_mcp.mcp.wolframscript_server.wolframscript_server()
+    Test the wolframscript MCP server functionality defined in mathematica_mcp.server.wolframscript_server()
 
     The MCP server wraps the 'wolframscript' command to return the license type of the Wolfram Engine.
     The MCP server is started automatically.
@@ -169,7 +169,7 @@ async def test_run_wolframscript_success(mocker: MockerFixture) -> None:
     mock_process.communicate = AsyncMock(return_value=(b"WolframScript 1.13.0 for Mac OS X ARM (64-bit)", b""))
 
     mock_create_subprocess = mocker.patch(
-        "mathematica_mcp.mcp.wolframscript_server.asyncio.create_subprocess_exec",
+        "mathematica_mcp.server.asyncio.create_subprocess_exec",
         return_value=mock_process,
     )
 
@@ -189,7 +189,7 @@ async def test_run_wolframscript_file_not_found(mocker: MockerFixture) -> None:
     """
     # Mock the subprocess to raise FileNotFoundError
     mocker.patch(
-        "mathematica_mcp.mcp.wolframscript_server.asyncio.create_subprocess_exec",
+        "mathematica_mcp.server.asyncio.create_subprocess_exec",
         side_effect=FileNotFoundError("wolframscript: command not found"),
     )
 
@@ -211,7 +211,7 @@ async def test_run_wolframscript_command_failure(mocker: MockerFixture) -> None:
     mock_process.communicate = AsyncMock(return_value=(b"", b"Error: Invalid syntax"))
 
     mocker.patch(
-        "mathematica_mcp.mcp.wolframscript_server.asyncio.create_subprocess_exec",
+        "mathematica_mcp.server.asyncio.create_subprocess_exec",
         return_value=mock_process,
     )
 
@@ -233,7 +233,7 @@ async def test_run_wolframscript_command_failure_no_stderr(mocker: MockerFixture
     mock_process.communicate = AsyncMock(return_value=(b"", b""))
 
     mocker.patch(
-        "mathematica_mcp.mcp.wolframscript_server.asyncio.create_subprocess_exec",
+        "mathematica_mcp.server.asyncio.create_subprocess_exec",
         return_value=mock_process,
     )
 
