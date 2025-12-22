@@ -30,7 +30,7 @@
     // logging
     "berublan.vscode-log-viewer",
     // mermaid 
-    "bierner.markdown-mermaid",
+    "bierner.markdown-mermaid"
   ],
   "unwantedRecommendations": [
     "mechatroner.rainbow-csv",
