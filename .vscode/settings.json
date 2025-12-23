@@ -57,6 +57,9 @@
     "fastmcp",
     "wolframscript",
     "mathematica",
+    "numpy",
+    "pyflakes",
+    "pypi",
   ],
   "cSpell.languageSettings": [
     {

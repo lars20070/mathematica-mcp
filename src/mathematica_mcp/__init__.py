@@ -1,3 +1,6 @@
 """mathematica_mcp public interface"""
 
-__all__ = []
+from importlib.metadata import version
+
+__version__ = version("mathematica-mcp")
+__all__ = ["__version__"]
