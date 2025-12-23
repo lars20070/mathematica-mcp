@@ -31,3 +31,13 @@ wolframscript -version
 wolframscript -activate
 wolframscript -code "Integrate[x*Sin[x], x]"
 ```
+
+## Installation
+
+```bash
+# with pip
+pip install mathematica-mcp
+
+# or with uv
+uv add mathematica-mcp
+```
