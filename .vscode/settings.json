@@ -59,6 +59,7 @@
     "mathematica",
     "numpy",
     "pyflakes",
+    "pypi",
   ],
   "cSpell.languageSettings": [
     {
