@@ -1,6 +1,6 @@
 # Mathematica MCP Server
 
-<!-- mcp-name: mathematica_mcp -->
+<!-- mcp-name: io.github.lars20070/mathematica-mcp -->
 
 [![Build](https://github.com/lars20070/mathematica-mcp/actions/workflows/build.yaml/badge.svg)](https://github.com/lars20070/mathematica-mcp/actions/workflows/build.yaml)
 [![Python Version](https://img.shields.io/badge/dynamic/toml?url=https://raw.githubusercontent.com/lars20070/mathematica-mcp/master/pyproject.toml&query=project.requires-python&label=python)](https://www.python.org/downloads/)
