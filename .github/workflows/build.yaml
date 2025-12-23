@@ -28,18 +28,6 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
-      - name: Free Disk Space on GitHub Actions runner
-        # Runners come with many preinstalled tools that we don't need for our build.
-        # This action removes them to free up disk space for the following steps, such as the heavy devcontainer build.
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
       - name: Install uv package manager
         uses: astral-sh/setup-uv@v5
         with:
