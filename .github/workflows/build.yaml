@@ -27,7 +27,7 @@ jobs:
         working-directory: .
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.2.0
+        uses: actions/checkout@v4
       - name: Free Disk Space on GitHub Actions runner
         # Runners come with many preinstalled tools that we don't need for our build.
         # This action removes them to free up disk space for the following steps, such as the heavy devcontainer build.
@@ -41,7 +41,7 @@ jobs:
           docker-images: true
           swap-storage: true
       - name: Install uv package manager
-        uses: astral-sh/setup-uv@v5.2.2
+        uses: astral-sh/setup-uv@v5
         with:
           version: ${{ matrix.uv-version }}
           enable-cache: true
@@ -76,7 +76,7 @@ jobs:
           file: ./coverage.xml
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
-  publish:
+  publish-pypi:
     runs-on: ubuntu-latest
     needs: [ci]
     # Only publish on push to master, not on PRs
@@ -86,7 +86,24 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4.2.0
-      - uses: astral-sh/setup-uv@v5.2.2
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
       - run: uv build
       - run: uv publish
+  publish-mcp-registry:
+    runs-on: ubuntu-latest
+    needs: [publish-pypi]
+    # Only publish on push to master, not on PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz
+      - name: Publish to MCP Registry
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
