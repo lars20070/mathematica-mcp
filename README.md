@@ -25,9 +25,9 @@ MCP server that wraps Mathematica's `wolframscript` command-line interface. It p
 
 Both Wolfram Engine and WolframScript are [freely available](https://www.wolfram.com/engine/) for personal use.
 
-## Prerequisites
+## Installation
 
-Please ensure WolframScript is installed and activated:
+1. Please ensure WolframScript is locally installed and activated:
 
 ```bash
 wolframscript -version
@@ -35,12 +35,21 @@ wolframscript -activate
 wolframscript -code "Integrate[x*Sin[x], x]"
 ```
 
-## Installation
+2. Install the [uv package manager](https://docs.astral.sh/uv/getting-started/installation/).
 
 ```bash
-# with pip
-pip install mathematica-mcp
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-# or with uv
-uv add mathematica-mcp
+3. Extend the Claude Desktop config file.<br>`~/Library/Application Support/Claude/claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "mathematica": {
+      "command": "uvx",
+      "args": ["mathematica-mcp"]
+    }
+  }
+}
 ```
