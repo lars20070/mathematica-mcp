@@ -60,6 +60,7 @@
     "numpy",
     "pyflakes",
     "pypi",
+    "jlumbroso",
   ],
   "cSpell.languageSettings": [
     {
