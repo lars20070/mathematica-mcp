@@ -45,11 +45,11 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ```json
 {
-  "mcpServers": {
-    "mathematica-mcp": {
-      "command": "uvx",
-      "args": ["mathematica-mcp"]
-    }
+  "mathematica-mcp": {
+    "command": "uvx",
+    "args": [
+      "mathematica-mcp"
+    ]
   }
 }
 ```
