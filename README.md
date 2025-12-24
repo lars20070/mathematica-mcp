@@ -41,15 +41,15 @@ wolframscript -code "Integrate[x*Sin[x], x]"
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-3. Extend the Claude Desktop config file.<br>`~/Library/Application Support/Claude/claude_desktop_config.json`
+3. Edit the Claude Desktop config file and add the `mathematica-mcp` server.<br>`~/Library/Application Support/Claude/claude_desktop_config.json`
 
 ```json
 {
-  "mcpServers": {
-    "mathematica": {
-      "command": "uvx",
-      "args": ["mathematica-mcp"]
-    }
+  "mathematica-mcp": {
+    "command": "uvx",
+    "args": [
+      "mathematica-mcp"
+    ]
   }
 }
 ```

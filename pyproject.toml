@@ -1,6 +1,6 @@
 [project]
 name = "mathematica_mcp"
-version = "0.1.3"
+version = "0.1.4"
 description = "MCP server for WolframScript"
 readme = "README.md"
 authors = [{ name = "Lars Nilse", email = "l.nilse@dunelm.org.uk" }]
@@ -31,7 +31,7 @@ Repository = "https://github.com/lars20070/mathematica-mcp"
 Issues = "https://github.com/lars20070/mathematica-mcp/issues"
 
 [project.scripts]
-wolframscript_server = "mathematica_mcp.server:wolframscript_server"
+mathematica-mcp = "mathematica_mcp.server:wolframscript_server"
 
 [tool.ruff]
 line-length = 150
