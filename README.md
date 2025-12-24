@@ -27,7 +27,7 @@ Both Wolfram Engine and WolframScript are [freely available](https://www.wolfram
 
 ## Installation
 
-1. Please ensure WolframScript is locally installed and activated:
+1. Please ensure WolframScript is installed and activated on your system.
 
 ```bash
 wolframscript -version
@@ -41,15 +41,18 @@ wolframscript -code "Integrate[x*Sin[x], x]"
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-3. Edit the Claude Desktop config file and add the `mathematica-mcp` server.<br>`~/Library/Application Support/Claude/claude_desktop_config.json`
+3. Edit the Claude Desktop config file and add the `mathematica-mcp` server. Note that `uvx` sets up an environment, installs the `mathematica-mcp` package, and runs the server by calling the `mathematica-mcp` entry point defined in [`pyproject.toml`](pyproject.toml). No cloning of the repository is necessary.
 
 ```json
 {
-  "mathematica-mcp": {
-    "command": "uvx",
-    "args": [
-      "mathematica-mcp"
-    ]
+  "mcpServers": {
+    "mathematica-mcp": {
+      "command": "uvx",
+      "args": [
+        "mathematica-mcp"
+      ]
+    }
   }
 }
 ```
+*Claude Desktop config file at* `~/Library/Application Support/Claude/claude_desktop_config.json`
