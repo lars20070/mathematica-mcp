@@ -1,6 +1,6 @@
 [project]
 name = "mathematica_mcp"
-version = "0.1.5"
+version = "0.1.6"
 description = "MCP server for WolframScript"
 readme = "README.md"
 authors = [{ name = "Lars Nilse", email = "l.nilse@dunelm.org.uk" }]
