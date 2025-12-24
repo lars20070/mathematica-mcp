@@ -41,7 +41,7 @@ wolframscript -code "Integrate[x*Sin[x], x]"
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-3. Edit the Claude Desktop config file and add the `mathematica-mcp` server. Note that `uvx` sets up an environment, installs the `mathematica-mcp` package, and runs the server by calling the `mathematica-mcp` entry point defined in [`pyproject.toml`](pyproject.toml). No cloning of the repository is necessary.
+3. Edit the Claude Desktop config file and add the `mathematica-mcp` server. Note that `uvx` sets up an environment, installs the `mathematica-mcp` package, and runs the server by calling the `mathematica-mcp` entry point defined in [`pyproject.toml`](pyproject.toml). No cloning of the repository is necessary. The logs are written to the default user log directory, e.g. `~/Library/Logs/mathematica_mcp/mathematica_mcp.log` on macOS.
 
 ```json
 {
@@ -55,4 +55,23 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
   }
 }
 ```
-*Claude Desktop config file at* `~/Library/Application Support/Claude/claude_desktop_config.json`
+*Claude Desktop config file on macOS:* `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+4. Alternatively, you can clone the repository and then modify or extend the MCP server code. In this case, make sure to update the path to the local repository in the Claude Desktop config file.
+
+```json
+{
+  "mcpServers": {
+    "mathematica-mcp": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/Users/lars/Code/mathematica-mcp",
+        "run",
+        "mathematica-mcp"
+      ]
+    }
+  }
+}
+```
+*Claude Desktop config file on macOS:* `~/Library/Application Support/Claude/claude_desktop_config.json`
