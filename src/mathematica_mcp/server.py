@@ -74,9 +74,9 @@ def wolframscript_server() -> None:
                 "command": "uv",
                 "args": [
                     "--directory",
-                    "/Users/lars/Code/mathematica_mcp",
+                    "/Users/lars/Code/mathematica-mcp",
                     "run",
-                    "wolframscript_server"
+                    "mathematica-mcp"
                 ]
             }
         }
