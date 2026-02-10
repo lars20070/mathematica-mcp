@@ -104,7 +104,6 @@ parallel = true
 disable_warnings = ["module-not-measured"]
 omit = [
   "tests/*",
-  "src/mathematica_mcp/server.py",
 ]
 
 [tool.coverage.report]
