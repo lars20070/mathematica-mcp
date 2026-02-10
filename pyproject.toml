@@ -63,7 +63,7 @@ lint.pydocstyle.convention = "google"
 [tool.pyright]
 # Core Settings
 typeCheckingMode = "basic"  # next step: "standard"
-pythonVersion = "3.12"
+pythonVersion = "3.10"
 venvPath = "."
 venv = ".venv"
 # Paths
