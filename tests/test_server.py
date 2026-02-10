@@ -22,7 +22,7 @@ async def test_wolframscript_server() -> None:
     """
     server_params = StdioServerParameters(
         command="uv",
-        args=["run", "wolframscript_server"],
+        args=["run", "mathematica-mcp"],
         env=dict(os.environ),
     )
 
@@ -59,7 +59,7 @@ async def test_version_wolframscript() -> None:
     """
     server_params = StdioServerParameters(
         command="uv",
-        args=["run", "wolframscript_server"],
+        args=["run", "mathematica-mcp"],
         env=dict(os.environ),
     )
 
@@ -96,7 +96,7 @@ async def test_version_wolframengine() -> None:
     """
     server_params = StdioServerParameters(
         command="uv",
-        args=["run", "wolframscript_server"],
+        args=["run", "mathematica-mcp"],
         env=dict(os.environ),
     )
 
@@ -133,7 +133,7 @@ async def test_licensetype() -> None:
     """
     server_params = StdioServerParameters(
         command="uv",
-        args=["run", "wolframscript_server"],
+        args=["run", "mathematica-mcp"],
         env=dict(os.environ),
     )
 
