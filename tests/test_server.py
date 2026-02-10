@@ -1,161 +1,17 @@
 #!/usr/bin/env python3
-import os
+from contextlib import AbstractAsyncContextManager
 from unittest.mock import AsyncMock
 
 import pytest
-from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
+from mcp import ClientSession
 from pytest_mock import MockerFixture
 
 from mathematica_mcp.logger import logger
 from mathematica_mcp.server import _run_wolframscript
 
-
-@pytest.mark.wolframscript
-@pytest.mark.asyncio
-async def test_wolframscript_server() -> None:
-    """
-    Test the wolframscript MCP server functionality defined in mathematica_mcp.server.wolframscript_server()
-
-    The MCP server wraps the 'wolframscript' command to evaluate Wolfram Language code.
-    The MCP server is started automatically.
-    """
-    server_params = StdioServerParameters(
-        command="uv",
-        args=["run", "mathematica-mcp"],
-        env=dict(os.environ),
-    )
-
-    async with stdio_client(server_params) as (read, write), ClientSession(read, write) as session:
-        await session.initialize()
-
-        # List all available tools
-        result = await session.list_tools()
-        tools = result.tools
-        assert len(tools) == 4
-        tool_names = {tool.name for tool in tools}
-        assert "evaluate" in tool_names
-        logger.debug(f"Available tools on wolframscript server: {[tool.name for tool in tools]}")
-
-        # Call the evaluate tool
-        result = await session.call_tool("evaluate", {"script": "Integrate[x*Sin[x], x]"})
-
-        # Extract text from result
-        content = result.content[0]
-        text = getattr(content, "text", str(content))
-
-        logger.debug(f"Script output: {text}")
-        assert len(text) > 0
-
-
-@pytest.mark.wolframscript
-@pytest.mark.asyncio
-async def test_version_wolframscript() -> None:
-    """
-    Test the wolframscript MCP server functionality defined in mathematica_mcp.server.wolframscript_server()
-
-    The MCP server wraps the 'wolframscript' command to return the version of WolframScript.
-    The MCP server is started automatically.
-    """
-    server_params = StdioServerParameters(
-        command="uv",
-        args=["run", "mathematica-mcp"],
-        env=dict(os.environ),
-    )
-
-    async with stdio_client(server_params) as (read, write), ClientSession(read, write) as session:
-        await session.initialize()
-
-        # List all available tools
-        result = await session.list_tools()
-        tools = result.tools
-        assert len(tools) == 4
-        tool_names = {tool.name for tool in tools}
-        assert "version_wolframscript" in tool_names
-        logger.debug(f"Available tools on wolframscript server: {[tool.name for tool in tools]}")
-
-        # Call the wolframscript tool
-        result = await session.call_tool("version_wolframscript", {})
-        # Extract text from result
-        content = result.content[0]
-        text = getattr(content, "text", str(content))
-
-        logger.debug(f"WolframScript version: {text}")
-        assert len(text) > 0
-        assert any(char.isdigit() for char in text), "Version should contain digits"
-
-
-@pytest.mark.wolframscript
-@pytest.mark.asyncio
-async def test_version_wolframengine() -> None:
-    """
-    Test the wolframscript MCP server functionality defined in mathematica_mcp.server.wolframscript_server()
-
-    The MCP server wraps the 'wolframscript' command to return the version of Wolfram Engine.
-    The MCP server is started automatically.
-    """
-    server_params = StdioServerParameters(
-        command="uv",
-        args=["run", "mathematica-mcp"],
-        env=dict(os.environ),
-    )
-
-    async with stdio_client(server_params) as (read, write), ClientSession(read, write) as session:
-        await session.initialize()
-
-        # List all available tools
-        result = await session.list_tools()
-        tools = result.tools
-        assert len(tools) == 4
-        tool_names = {tool.name for tool in tools}
-        assert "version_wolframengine" in tool_names
-        logger.debug(f"Available tools on wolframscript server: {[tool.name for tool in tools]}")
-
-        # Call the wolframscript tool
-        result = await session.call_tool("version_wolframengine", {})
-        # Extract text from result
-        content = result.content[0]
-        text = getattr(content, "text", str(content))
-
-        logger.debug(f"Wolfram Engine version: {text}")
-        assert len(text) > 0
-        assert any(char.isdigit() for char in text), "Version should contain digits"
-
-
-@pytest.mark.wolframscript
-@pytest.mark.asyncio
-async def test_licensetype() -> None:
-    """
-    Test the wolframscript MCP server functionality defined in mathematica_mcp.server.wolframscript_server()
-
-    The MCP server wraps the 'wolframscript' command to return the license type of the Wolfram Engine.
-    The MCP server is started automatically.
-    """
-    server_params = StdioServerParameters(
-        command="uv",
-        args=["run", "mathematica-mcp"],
-        env=dict(os.environ),
-    )
-
-    async with stdio_client(server_params) as (read, write), ClientSession(read, write) as session:
-        await session.initialize()
-
-        # List all available tools
-        result = await session.list_tools()
-        tools = result.tools
-        assert len(tools) == 4
-        tool_names = {tool.name for tool in tools}
-        assert "licensetype" in tool_names
-        logger.debug(f"Available tools on wolframscript server: {[tool.name for tool in tools]}")
-
-        # Call the wolframscript tool
-        result = await session.call_tool("licensetype", {})
-        # Extract text from result
-        content = result.content[0]
-        text = getattr(content, "text", str(content))
-
-        logger.debug(f"Wolfram Engine license type: {text}")
-        assert len(text) > 0
+# ---------------------------------------------------------------------------
+# Unit tests
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
@@ -242,3 +98,65 @@ async def test_run_wolframscript_command_failure_no_stderr(mocker: MockerFixture
 
     assert "'wolframscript' command failed" in str(exc_info.value)
     assert "Unknown error" in str(exc_info.value)
+
+
+# ---------------------------------------------------------------------------
+# Integration tests (require local WolframScript installation)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.wolframscript
+@pytest.mark.asyncio
+async def test_tool_catalog(mcp_session: AbstractAsyncContextManager[ClientSession]) -> None:
+    """Verify the MCP server exposes the expected set of tools."""
+    async with mcp_session as session:
+        result = await session.list_tools()
+        tool_names = {tool.name for tool in result.tools}
+        logger.debug(f"Available tools on wolframscript server: {sorted(tool_names)}")
+        assert tool_names == {"evaluate", "version_wolframscript", "version_wolframengine", "licensetype"}
+
+
+@pytest.mark.wolframscript
+@pytest.mark.asyncio
+async def test_evaluate(mcp_session: AbstractAsyncContextManager[ClientSession]) -> None:
+    """Test the 'evaluate' tool by computing a symbolic integral."""
+    async with mcp_session as session:
+        result = await session.call_tool("evaluate", {"script": "Integrate[x*Sin[x], x]"})
+        text = getattr(result.content[0], "text", str(result.content[0]))
+        logger.debug(f"Script output: {text}")
+        assert len(text) > 0
+
+
+@pytest.mark.wolframscript
+@pytest.mark.asyncio
+async def test_version_wolframscript(mcp_session: AbstractAsyncContextManager[ClientSession]) -> None:
+    """Test the 'version_wolframscript' tool."""
+    async with mcp_session as session:
+        result = await session.call_tool("version_wolframscript", {})
+        text = getattr(result.content[0], "text", str(result.content[0]))
+        logger.debug(f"WolframScript version: {text}")
+        assert len(text) > 0
+        assert any(char.isdigit() for char in text), "Version should contain digits"
+
+
+@pytest.mark.wolframscript
+@pytest.mark.asyncio
+async def test_version_wolframengine(mcp_session: AbstractAsyncContextManager[ClientSession]) -> None:
+    """Test the 'version_wolframengine' tool."""
+    async with mcp_session as session:
+        result = await session.call_tool("version_wolframengine", {})
+        text = getattr(result.content[0], "text", str(result.content[0]))
+        logger.debug(f"Wolfram Engine version: {text}")
+        assert len(text) > 0
+        assert any(char.isdigit() for char in text), "Version should contain digits"
+
+
+@pytest.mark.wolframscript
+@pytest.mark.asyncio
+async def test_licensetype(mcp_session: AbstractAsyncContextManager[ClientSession]) -> None:
+    """Test the 'licensetype' tool."""
+    async with mcp_session as session:
+        result = await session.call_tool("licensetype", {})
+        text = getattr(result.content[0], "text", str(result.content[0]))
+        logger.debug(f"Wolfram Engine license type: {text}")
+        assert len(text) > 0

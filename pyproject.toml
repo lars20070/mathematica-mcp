@@ -1,6 +1,6 @@
 [project]
 name = "mathematica_mcp"
-version = "0.1.9"
+version = "0.1.10"
 description = "MCP server for WolframScript"
 readme = "README.md"
 authors = [{ name = "Lars Nilse", email = "l.nilse@dunelm.org.uk" }]
@@ -104,7 +104,6 @@ parallel = true
 disable_warnings = ["module-not-measured"]
 omit = [
   "tests/*",
-  "src/mathematica_mcp/server.py",
 ]
 
 [tool.coverage.report]
