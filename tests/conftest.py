@@ -16,4 +16,3 @@ def skip_wolframscript_tests(request: pytest.FixtureRequest) -> None:
     """
     if request.node.get_closest_marker("wolframscript") and os.getenv("GITHUB_ACTIONS") == "true":
         pytest.skip("Tests requiring WolframScript skipped in CI environment")
-
