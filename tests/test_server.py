@@ -1,16 +1,36 @@
 #!/usr/bin/env python3
+import os
 from contextlib import AbstractAsyncContextManager
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
+import fastmcp
 import pytest
 from mcp import ClientSession
 from pytest_mock import MockerFixture
 
 from mathematica_mcp.logger import logger
-from mathematica_mcp.server import _run_wolframscript
+from mathematica_mcp.server import _run_wolframscript, wolframscript_server
 
 # ---------------------------------------------------------------------------
-# Unit tests
+# Fixtures
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def tool_functions(mocker: MockerFixture) -> dict:
+    """Call wolframscript_server() with a mocked FastMCP to capture registered tool functions."""
+    registered_tools: dict = {}
+
+    mock_server = MagicMock()
+    mock_server.tool.side_effect = lambda func: registered_tools.update({func.__name__: func}) or func
+    mocker.patch.object(fastmcp, "FastMCP", return_value=mock_server)
+    wolframscript_server()
+
+    return registered_tools
+
+
+# ---------------------------------------------------------------------------
+# Unit tests – _run_wolframscript
 # ---------------------------------------------------------------------------
 
 
@@ -98,6 +118,103 @@ async def test_run_wolframscript_command_failure_no_stderr(mocker: MockerFixture
 
     assert "'wolframscript' command failed" in str(exc_info.value)
     assert "Unknown error" in str(exc_info.value)
+
+
+# ---------------------------------------------------------------------------
+# Unit tests – wolframscript_server & tool functions
+# ---------------------------------------------------------------------------
+
+
+def test_wolframscript_server_creates_and_runs(mocker: MockerFixture) -> None:
+    """Test that wolframscript_server() creates a FastMCP server and calls run()."""
+    mock_server = MagicMock()
+    mock_fastmcp_cls = mocker.patch.object(fastmcp, "FastMCP", return_value=mock_server)
+
+    wolframscript_server()
+
+    mock_fastmcp_cls.assert_called_once_with("WolframScript Server")
+    mock_server.run.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_evaluate_tool(tool_functions: dict, mocker: MockerFixture) -> None:
+    """Test the evaluate tool writes a temp file, calls _run_wolframscript, and cleans up."""
+    mock_run = mocker.patch(
+        "mathematica_mcp.server._run_wolframscript",
+        new_callable=AsyncMock,
+        return_value="-(x*Cos[x]) + Sin[x]",
+    )
+
+    result = await tool_functions["evaluate"]("Integrate[x*Sin[x], x]")
+
+    assert result == "-(x*Cos[x]) + Sin[x]"
+    mock_run.assert_called_once()
+    args = mock_run.call_args[0][0]
+    assert args[0] == "-print"
+    assert args[1] == "-file"
+    assert args[2].endswith(".wl")
+    assert not os.path.exists(args[2])  # Temp file cleaned up
+
+
+@pytest.mark.asyncio
+async def test_evaluate_tool_cleanup_on_error(tool_functions: dict, mocker: MockerFixture) -> None:
+    """Test that the evaluate tool cleans up the temp file even when _run_wolframscript fails."""
+    mock_run = mocker.patch(
+        "mathematica_mcp.server._run_wolframscript",
+        new_callable=AsyncMock,
+        side_effect=RuntimeError("wolframscript failed"),
+    )
+
+    with pytest.raises(RuntimeError, match="wolframscript failed"):
+        await tool_functions["evaluate"]("bad script")
+
+    args = mock_run.call_args[0][0]
+    assert not os.path.exists(args[2])  # Temp file cleaned up despite error
+
+
+@pytest.mark.asyncio
+async def test_version_wolframscript_tool(tool_functions: dict, mocker: MockerFixture) -> None:
+    """Test the version_wolframscript tool delegates to _run_wolframscript."""
+    mock_run = mocker.patch(
+        "mathematica_mcp.server._run_wolframscript",
+        new_callable=AsyncMock,
+        return_value="WolframScript 1.13.0 for Mac OS X ARM (64-bit)",
+    )
+
+    result = await tool_functions["version_wolframscript"]()
+
+    assert result == "WolframScript 1.13.0 for Mac OS X ARM (64-bit)"
+    mock_run.assert_called_once_with(["-version"])
+
+
+@pytest.mark.asyncio
+async def test_version_wolframengine_tool(tool_functions: dict, mocker: MockerFixture) -> None:
+    """Test the version_wolframengine tool delegates to _run_wolframscript."""
+    mock_run = mocker.patch(
+        "mathematica_mcp.server._run_wolframscript",
+        new_callable=AsyncMock,
+        return_value="14.0.0 for Mac OS X ARM (64-bit)",
+    )
+
+    result = await tool_functions["version_wolframengine"]()
+
+    assert result == "14.0.0 for Mac OS X ARM (64-bit)"
+    mock_run.assert_called_once_with(["-code", "$Version"])
+
+
+@pytest.mark.asyncio
+async def test_licensetype_tool(tool_functions: dict, mocker: MockerFixture) -> None:
+    """Test the licensetype tool delegates to _run_wolframscript."""
+    mock_run = mocker.patch(
+        "mathematica_mcp.server._run_wolframscript",
+        new_callable=AsyncMock,
+        return_value="Professional",
+    )
+
+    result = await tool_functions["licensetype"]()
+
+    assert result == "Professional"
+    mock_run.assert_called_once_with(["-code", "$LicenseType"])
 
 
 # ---------------------------------------------------------------------------
