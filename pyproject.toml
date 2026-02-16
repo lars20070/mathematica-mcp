@@ -1,6 +1,6 @@
 [project]
 name = "mathematica_mcp"
-version = "0.1.11"
+version = "0.1.12"
 description = "MCP server for WolframScript"
 keywords = ["mcp", "model-context-protocol", "mathematica", "wolframscript"]
 classifiers = [
