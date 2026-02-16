@@ -1,10 +1,27 @@
 [project]
 name = "mathematica_mcp"
-version = "0.1.10"
+version = "0.1.11"
 description = "MCP server for WolframScript"
+keywords = ["mcp", "model-context-protocol", "mathematica", "wolframscript"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Framework :: Pydantic",
+    "Framework :: Pydantic :: 2",
+    "Operating System :: OS Independent",
+    "Typing :: Typed",
+]
 readme = "README.md"
 authors = [{ name = "Lars Nilse", email = "l.nilse@dunelm.org.uk" }]
-keywords = ["mcp", "model-context-protocol", "mathematica", "wolframscript"]
+license = "MIT"
 requires-python = ">=3.10,<3.14"
 dependencies = [
   "loguru>=0.7.3",
